@@ -7,13 +7,14 @@ import 'package:rick_and_morty/feature/presentation/bloc/person_list_cubit/perso
 import 'package:rick_and_morty/feature/presentation/widgets/person_card_widget.dart';
 
 class PersonsList extends StatelessWidget {
-   PersonsList({super.key});
+  PersonsList({super.key});
 
   final scrollController = ScrollController();
+
   void setUpScrollController(BuildContext context) {
-    scrollController.addListener((){
-      if(scrollController.position.atEdge) {
-        if(scrollController.position.pixels != 0) {
+    scrollController.addListener(() {
+      if (scrollController.position.atEdge) {
+        if (scrollController.position.pixels != 0) {
           // BlocProvider.of<PersonListCubit>(context).loadPerson();
           context.read<PersonListCubit>().loadPerson();
         }
@@ -23,22 +24,24 @@ class PersonsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setUpScrollController(context);
     bool isLoading = false;
+
+    setUpScrollController(context);
 
     return BlocBuilder<PersonListCubit, PersonState>(
       builder: (context, state) {
         List<PersonEntity> persons = [];
         if (state is PersonLoading && state.isFirstFetch) {
           return _loadingIndicator();
-        } else if(state is PersonLoading){
-              persons = state.oldPersonList;
-              isLoading = true;
-        }
+        } else if (state is PersonLoading) {
+          persons = state.oldPersonList;
 
-        else if (state is PersonLoaded) {
+          isLoading = true;
+
+        } else if (state is PersonLoaded) {
           persons = state.personsList;
-        }else if(state is PersonError) {
+
+        } else if (state is PersonError) {
           return Text(state.message, style: TextStyle(color: Colors.white, fontSize: 25));
         }
         return ListView.separated(
@@ -48,10 +51,10 @@ class PersonsList extends StatelessWidget {
           },
           itemCount: persons.length + (isLoading ? 1 : 0),
           itemBuilder: (context, index) {
-            if(index < persons.length) {
-              return PersonCard(person : persons[index]);
-            }else{
-              Timer(const Duration(milliseconds: 30), (){
+            if (index < persons.length) {
+              return PersonCard(person: persons[index]);
+            } else {
+              Timer(const Duration(milliseconds: 30), () {
                 scrollController.jumpTo(scrollController.position.maxScrollExtent);
               });
 
@@ -61,7 +64,9 @@ class PersonsList extends StatelessWidget {
         );
       },
     );
-  }  Widget _loadingIndicator() {
+  }
+
+  Widget _loadingIndicator() {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: Center(child: CircularProgressIndicator()),

@@ -2,17 +2,18 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rick_and_morty/core/error/failure.dart';
 import 'package:rick_and_morty/core/usecases/usecases.dart';
+import 'package:rick_and_morty/feature/data/models/person_model.dart';
 import 'package:rick_and_morty/feature/domain/entities/person_entity.dart';
 import 'package:rick_and_morty/feature/domain/repositories/person_repository.dart';
 
-class GetAllPersons extends Usecase<List<PersonEntity>, PagePersonParams> {
+class GetAllPersons extends Usecase<PersonResultModel, PagePersonParams> {
   final PersonRepository personRepository;
   GetAllPersons(this.personRepository);
 
 @override
-Future<Either<Failure, List<PersonEntity>>> call(PagePersonParams params) async {
+Future<Either<Failure, PersonResultModel>> call(PagePersonParams params) async {
   final result = await personRepository.getAllPersons(params.page);
-  return result.map((personResult) => personResult.personModel);
+  return result.map((personResult) => personResult);
 }
 
 }

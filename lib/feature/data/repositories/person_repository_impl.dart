@@ -3,7 +3,6 @@ import 'package:rick_and_morty/core/error/exeption.dart';
 import 'package:rick_and_morty/core/error/failure.dart';
 import 'package:rick_and_morty/feature/data/datasources/person_remote_data_source.dart';
 import 'package:rick_and_morty/feature/data/models/person_model.dart';
-import 'package:rick_and_morty/feature/domain/entities/person_entity.dart';
 import 'package:rick_and_morty/feature/domain/repositories/person_repository.dart';
 
 import '../../../core/platform/network_info.dart';
@@ -26,7 +25,9 @@ class PersonRepositoryImpl implements PersonRepository {
   Future<Either<Failure, PersonResultModel>> _getPersonResult(Future<PersonResultModel> Function() getPersons) async {
     if (await networkInfo.isConnected) {
       try {
+
         final remotePerson = await getPersons();
+
         localDataSource.personsToCache(remotePerson.personModel);
         return Right(remotePerson);
       } on ServerException {
@@ -35,7 +36,7 @@ class PersonRepositoryImpl implements PersonRepository {
     } else {
       try {
         final localPerson = await localDataSource.getLastPersonsFromCache();
-        return Right(PersonResultModel(personModel: localPerson, pages: 99));
+        return Right(PersonResultModel(personModel: localPerson, pages: 10));
       } on CacheExeption {
         return Left(CacheFailure());
       }
@@ -43,25 +44,12 @@ class PersonRepositoryImpl implements PersonRepository {
   }
 
   @override
-  Future<Either<Failure, PersonResultModel>> searchPerson(String query) async {
+  Future<Either<Failure, PersonResultModel>> searchPerson(String query, int page) async {
     return await _getPersonResult(() {
-      return remoteDataSource.searchPerson(query);
+      return remoteDataSource.searchPerson(query,page);
     });
   }
 
-  // @override
-  // Future<Either<Failure, PersonResultModel>> searchPerson(String query) async {
-  //   return await _getPersonResult(() {
-  //     return remoteDataSource.searchPerson(query);
-  //   });
-  // }
-
-  // @override
-  // Future<Either<Failure, List<PersonEntity>>> searchPerson(String query) async {
-  //   return await _getPersons(() {
-  //     return remoteDataSource.searchPerson(query);
-  //   });
-  // }
 
   Future<Either<Failure, List<PersonModel>>> _getPersons(Future<List<PersonModel>> Function() getPersons) async {
     if (await networkInfo.isConnected) {

@@ -2,23 +2,25 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rick_and_morty/core/error/failure.dart';
 import 'package:rick_and_morty/core/usecases/usecases.dart';
-import 'package:rick_and_morty/feature/domain/entities/person_entity.dart';
+import 'package:rick_and_morty/feature/data/models/person_model.dart';
 import 'package:rick_and_morty/feature/domain/repositories/person_repository.dart';
 
-class SearchPerson extends Usecase<List<PersonEntity>, SearchPersonParams> {
+class SearchPerson extends Usecase<PersonResultModel, SearchPersonParams> {
   final PersonRepository personRepository;
   SearchPerson(this.personRepository);
 
+
   @override
-  Future<Either<Failure, List<PersonEntity>>> call(SearchPersonParams params) async {
-    final result = await personRepository.searchPerson(params.query);
-    return result.map((personResult) => personResult.personModel);
+  Future<Either<Failure, PersonResultModel>> call(SearchPersonParams params) async {
+    final result = await personRepository.searchPerson(params.query,params.page);
+    return result.map((personResult) => personResult);
   }
 }
 
 class SearchPersonParams extends Equatable {
   final String query;
-  const SearchPersonParams({required this.query});
+  final int page;
+  const SearchPersonParams({required this.query, this.page = 1});
 
   @override
   List<Object?> get props => [query];

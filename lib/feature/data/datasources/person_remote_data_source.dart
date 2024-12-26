@@ -7,7 +7,7 @@ import 'package:rick_and_morty/feature/data/models/person_model.dart';
 abstract class PersonRemoteDataSource {
   Future<PersonResultModel> getAllPersons(int page);
 
-  Future<PersonResultModel> searchPerson(String query);
+  Future<PersonResultModel> searchPerson(String query,int page);
 }
 
 class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
@@ -19,7 +19,7 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
   Future<PersonResultModel> getAllPersons(int page) => _getPersonFromUrl('https://rickandmortyapi.com/api/character/?page=$page');
 
   @override
-  Future<PersonResultModel> searchPerson(String query) => _getPersonFromUrl('https://rickandmortyapi.com/api/character/?name=$query');
+  Future<PersonResultModel> searchPerson(String query, int page) => _getPersonFromUrl('https://rickandmortyapi.com/api/character/?page=$page&name=$query');
 
 
 
@@ -32,6 +32,7 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
 
     if (response.statusCode == 200) {
       final persons = json.decode(response.body);
+      print("Max pages ${persons['info']['pages']}");
       return PersonResultModel(pages: persons['info']['pages'], personModel: (persons['results'] as List)
           .map((person) => PersonModel.fromJson(person))
           .toList());

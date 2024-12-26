@@ -13,3 +13,13 @@ class SearchPersons extends PersonSearchEvent {
 
   const SearchPersons({required this.personQuery});
 }
+
+class PersonSearchLoadingEvent extends PersonSearchEvent {
+  final String personQuery;
+
+  const PersonSearchLoadingEvent({required this.personQuery});
+}
+
+class SearchPersonLoadMore extends PersonSearchEvent {
+
+}
